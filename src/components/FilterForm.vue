@@ -1,9 +1,20 @@
 <template>
-  <div class="form_content-container" v-bind:class="{ active_container: true }">
-    <div class="form-wrapper" v-bind:class="{ active_wrapper: true }">
-      <form v-on:submit.prevent class="form">
-        <div class="city-filter" tabindex="1" v-on:focus="setFocus('city')">
-          <span class="filter-name">Location</span>
+  <div 
+    class="form_content-container" 
+    v-bind:class="{ active_container: isOpened }" 
+    v-on:click = "closeFilter"
+    >
+    <div class="form-wrapper" v-bind:class="{ active_wrapper: isOpened }">
+      <form 
+      v-on:submit.prevent class="form" 
+      v-on:click = "check"
+      >
+        <div 
+          class="city-filter" 
+          v-on:click="activate('city')" 
+          v-bind:class = "{bordered: currentFocus === 'city'}"
+        >
+          <span class="filter-name" v-bind:class = "{disabled: !isOpened}">Location</span>
           <input
             type="text"
             placeholder="Add location"
@@ -12,8 +23,12 @@
             class="filter-input"
           />
         </div>
-        <div class="guests-filter" tabindex="2" v-on:focus="setFocus('guests')">
-          <span class="filter-name">Guests</span>
+        <div 
+          class="guests-filter"  
+          v-on:click="activate('guests')"
+          v-bind:class = "{bordered: currentFocus === 'guests'}"
+        >
+          <span class="filter-name" v-bind:class = "{disabled: !isOpened}">Guests</span>
           <input
             type="text"
             placeholder="Add guests"
@@ -22,7 +37,10 @@
             class="filter-input"
           />
         </div>
-        <button class="search_by_filters-button">Search</button>
+        <button class="search_by_filters-button" v-on:click="activeButton('', stays)">
+          <i class="bi bi-search"></i>
+          Search
+          </button>
       </form>
       <div class="filter_variants-container">
         <div
@@ -92,7 +110,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 export default {
   name: "FilterForm",
   components: {},
-  props: ["cities"],
+  props: ["cities", "stays", "filterMethod"],
   data() {
     return {
       CityFilterValue: "",
@@ -100,6 +118,7 @@ export default {
       totalAdults: 0,
       totalChildren: 0,
       currentFocus: "",
+      isOpened: false
     };
   },
   methods: {
@@ -150,10 +169,40 @@ export default {
     resetFocus() {
       this.currentFocus = "";
     },
+    activate(filterName){
+      this.setFocus(filterName)
+  this.isOpened = true;
+    },
+    closeFilter(e){
+      let element = e.target;
+      if(element.classList.contains("active_container")){
+        this.isOpened = false;
+        this.setFocus('');
+      }
+    },
+    updateData(){
+      if(!this.isOpened) return;
+      this.filterMethod({
+        cityFilter: this.CityFilterValue,
+        guestsFilter: this.totalAdults + this.totalChildren
+      })
+      this.CityFilterValue = '';
+      this.GuestsFilterValue = '';
+      this.totalAdults = 0;
+      this.totalChildren = 0;
+      this.isOpened = false;
+  },
+    activeButton(focus, stays){
+      this.activate(focus);
+      this.updateData(stays);
+    }
   },
 };
 </script>
 <style>
+.form_content-container{
+  width: 30%;
+}
 .active_container {
   width: 100%;
   height: 100vh;
@@ -163,14 +212,21 @@ export default {
   left: 0;
   background: rgba(0, 0, 0, 0.5);
 }
+
 .active_wrapper {
   width: 100%;
-  height: 40%;
+  min-height: 40%;
   background: #fff;
   padding: 50px 100px;
 }
 
-.form {
+.form{
+  width: fit-content;;
+  box-shadow: 0 1px 6px 0 rgb(189, 189, 189);
+  border-radius: 10px;
+}
+
+.active_wrapper > .form {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -181,7 +237,20 @@ export default {
 }
 
 .city-filter,
-.guests-filter {
+.guests-filter{
+  display: inline-block;
+  width: fit-content;
+  cursor: pointer;
+  padding: .75rem 1rem;
+}
+
+
+.guests-filter{
+  border-inline: 1px solid #f2f2f2;
+}
+
+.active_wrapper .city-filter,
+.active_wrapper .guests-filter {
   width: 100%;
   border: 1px solid #f2f2f2;
   padding: 10px 30px;
@@ -189,11 +258,6 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
-}
-
-.city-filter:focus,
-.guests-filter:focus {
-  border-color: black;
 }
 
 .filter-name {
@@ -206,7 +270,7 @@ export default {
   font-weight: 700;
   text-transform: capitalize;
 }
-.city-filter {
+.active_wrapper .city-filter {
   border-radius: 10px 0 0 10px;
 }
 
@@ -214,9 +278,19 @@ export default {
   all: unset;
 }
 
-.search_by_filters-button {
+.search_by_filters-button{
   all: unset;
+  width: 20px;
+  overflow: hidden;
+  white-space: pre;
+  letter-spacing: 100px;
+  padding: 12px 20px;
+  color: #eb5757;
   cursor: pointer;
+}
+
+.active_wrapper  .search_by_filters-button {
+  all: unset;
   width: 20%;
   background-color: #eb5757;
   color: white;
@@ -225,8 +299,9 @@ export default {
   border-radius: 10px;
   min-width: 100px;
   transition: 300ms ease;
+  margin-left: 1rem;
 }
-.search_by_filters-button:hover {
+.active_wrapper  .search_by_filters-button:hover {
   background-color: #f17070;
 }
 
@@ -305,5 +380,14 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
+.active_wrapper .bordered{
+  border-color: black ;
+}
+
+.disabled{
+  display: none;
+}
+
 </style>
 

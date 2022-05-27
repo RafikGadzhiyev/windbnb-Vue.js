@@ -34,8 +34,4 @@ export default {
 
   }
 
-  @media screen and (max-height: 600px){
-    overflow: auto;
-  }
-
 </style>

@@ -125,7 +125,7 @@ export default {
       totalAdults: 0,
       totalChildren: 0,
       currentFocus: "",
-      isOpened: true
+      isOpened: false
     };
   },
   methods: {

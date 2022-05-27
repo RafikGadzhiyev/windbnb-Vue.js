@@ -5,6 +5,12 @@
     v-on:click = "closeFilter"
     >
     <div class="form-wrapper" v-bind:class="{ active_wrapper: isOpened }">
+    <div class="filter_description-container">
+      <span class = 'description'>Edit your search</span>
+      <button class="close_filter-button" v-on:click = "closeFilterByButton">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
       <form 
       v-on:submit.prevent class="form" 
       v-on:click = "check"
@@ -37,9 +43,10 @@
             class="filter-input"
           />
         </div>
-        <button class="search_by_filters-button" v-on:click="activeButton('', stays)">
+        <button class="search_by_filters-button" v-on:click="activeButton">
+
           <i class="bi bi-search"></i>
-          Search
+          <span>Search</span>
           </button>
       </form>
       <div class="filter_variants-container">
@@ -118,7 +125,7 @@ export default {
       totalAdults: 0,
       totalChildren: 0,
       currentFocus: "",
-      isOpened: false
+      isOpened: true
     };
   },
   methods: {
@@ -181,7 +188,7 @@ export default {
       }
     },
     updateData(){
-      if(!this.isOpened) return;
+      if(!this.isOpened) return this.isOpened = true;
       this.filterMethod({
         cityFilter: this.CityFilterValue,
         guestsFilter: this.totalAdults + this.totalChildren
@@ -192,16 +199,18 @@ export default {
       this.totalChildren = 0;
       this.isOpened = false;
   },
-    activeButton(focus, stays){
-      this.activate(focus);
-      this.updateData(stays);
-    }
+    activeButton(){
+      this.updateData();
+},
+closeFilterByButton(){
+  this.isOpened = false;
+}
   },
 };
 </script>
 <style>
 .form_content-container{
-  width: 30%;
+  width: 90%;
 }
 .active_container {
   width: 100%;
@@ -216,14 +225,48 @@ export default {
 .active_wrapper {
   width: 100%;
   min-height: 40%;
+  max-height: 80vh;
   background: #fff;
   padding: 50px 100px;
+}
+
+.form-wrapper{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter_description-container{
+  display: none;
+}
+
+
+
+.close_filter-button{
+  all: unset;
+  cursor: pointer;
+  font-weight: 700;
+  color: #828282;
+  transition: 100ms ease;
+}
+
+.description{
+  font-weight: 700;
+}
+
+.close_filter-button:hover{
+  color: black;
 }
 
 .form{
   width: fit-content;;
   box-shadow: 0 1px 6px 0 rgb(189, 189, 189);
   border-radius: 10px;
+  overflow: hidden;
+}
+
+.active_wrapper{
+  display: block;
 }
 
 .active_wrapper > .form {
@@ -247,6 +290,10 @@ export default {
 
 .guests-filter{
   border-inline: 1px solid #f2f2f2;
+}
+
+.filter_variants-container{
+  display: none;
 }
 
 .active_wrapper .city-filter,
@@ -283,10 +330,21 @@ export default {
   width: 20px;
   overflow: hidden;
   white-space: pre;
-  letter-spacing: 100px;
   padding: 12px 20px;
   color: #eb5757;
   cursor: pointer;
+}
+
+.search_by_filters-button > i{
+  margin-right: .5rem;
+}
+
+.search_by_filters-button > span{
+  display: none;
+}
+
+.active_wrapper .search_by_filters-button > span{
+  display: inline;
 }
 
 .active_wrapper  .search_by_filters-button {
@@ -305,7 +363,7 @@ export default {
   background-color: #f17070;
 }
 
-.filter_variants-container {
+.active_wrapper .filter_variants-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
@@ -387,6 +445,77 @@ export default {
 
 .disabled{
   display: none;
+}
+
+@media screen and (max-width: 825px) {
+  .form_content-container{
+    width: 100%;
+  }
+  .form-wrapper{
+    justify-content: center;
+  }
+
+  .form{
+    width: fit-content;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr) .5fr;
+  }
+
+  .city-filter,
+  .guests-filter,
+  .search_by_filters-button{
+    width: 100%;
+  }
+
+  .filter-input{
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 950px){
+  .active_wrapper{
+    padding: 50px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .active_wrapper{
+    padding: 25px 25px 75px 25px;
+    position: relative;
+  }
+
+  .active_wrapper .filter_description-container {
+    display: flex;
+    align-items: flex-start;
+    height: 30px;
+    justify-content: space-between;
+  }
+
+  .active_wrapper .search_by_filters-button{
+    position: absolute;
+    bottom:  1rem;
+  }
+
+  .active_wrapper .form{
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+  }
+  .active_wrapper .filter_variants-container{
+    display: block;
+    padding-left: 10px;
+  }
+  .active_wrapper .city-filter{
+    border-radius: 10px 10px 0 0;
+  }
+  .active_wrapper .guests-filter{
+    border-radius: 0 0 10px 10px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .active_wrapper{
+    overflow: auto;
+  }
 }
 
 </style>

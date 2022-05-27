@@ -51,4 +51,11 @@ export default {
   min-height: 100vh;
   padding-inline: 50px;
 }
+
+@media screen and (max-width: 640px) {
+  .content-container{
+    padding-inline: 20px;
+  }
+}
+
 </style>

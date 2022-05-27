@@ -94,4 +94,17 @@
 
     }
 
+    @media screen and (max-width: 360px){
+
+        .stay_details-container{
+            gap: 10px;
+        }
+
+        .super_stay.active{
+            display: block;
+            width: 29%;
+            height:fit-content;
+        }
+    }
+
 </style>

@@ -24,4 +24,18 @@ export default {
     justify-content: space-between;
     padding-top: 20px;
   }
+
+  @media screen and (max-width: 750px) {
+    header{
+      flex-direction: column;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+
+  }
+
+  @media screen and (max-height: 600px){
+    overflow: auto;
+  }
+
 </style>
